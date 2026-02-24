@@ -4,11 +4,13 @@ import { isAxiosError } from "axios";
 import api from "../../lib/api";
 import ProductCard from "../../components/ProductCard";
 import { Product } from "../../types/product";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     api
@@ -63,7 +65,11 @@ export default function ProductsPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              addToCart={addToCart}
+            />
           ))}
         </div>
       </div>

@@ -1,9 +1,16 @@
+import { memo } from "react";
 import { Product } from "../types/product";
-import { useCart } from "../context/CartContext";
 
-export default function ProductCard({ product }: { product: Product }) {
+interface ProductCardProps {
+  product: Product;
+  addToCart: (productId: string, variantId: string) => Promise<void>;
+}
+
+const ProductCard = memo(function ProductCard({
+  product,
+  addToCart,
+}: ProductCardProps) {
   const variants = product.variants ?? [];
-  const { addToCart } = useCart();
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 hover:border-orange-500 transition-all group">
@@ -42,4 +49,6 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
     </div>
   );
-}
+});
+
+export default ProductCard;
