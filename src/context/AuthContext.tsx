@@ -5,9 +5,10 @@ import {
   useContext,
   useEffect,
   useState,
+  useMemo,
+  useCallback,
   ReactNode,
 } from "react";
-import api from "../lib/api";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -28,46 +29,71 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [authState, setAuthState] = useState<{
+    user: User | null;
+    token: string | null;
+    loading: boolean;
+  }>({
+    user: null,
+    token: null,
+    loading: true,
+  });
+
   const router = useRouter();
 
   useEffect(() => {
-    // Al cargar la app, miramos si hay sesión guardada
-    const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    const initAuth = () => {
+      const savedToken = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+      setAuthState({
+        token: savedToken,
+        user: savedUser ? JSON.parse(savedUser) : null,
+        loading: false,
+      });
+    };
+    initAuth();
   }, []);
 
-  const login = (newToken: string, userData: User) => {
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-    Cookies.set("token", newToken, { expires: 7 });
-    router.push("/"); // Redirigir al home tras login
-  };
+  const login = useCallback(
+    (newToken: string, userData: User) => {
+      setAuthState({
+        token: newToken,
+        user: userData,
+        loading: false,
+      });
+      localStorage.setItem("token", newToken);
+      localStorage.setItem("user", JSON.stringify(userData));
+      Cookies.set("token", newToken, { expires: 7 });
+      router.push("/"); // Redirigir al home tras login
+    },
+    [router],
+  );
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
+  const logout = useCallback(() => {
+    setAuthState({
+      token: null,
+      user: null,
+      loading: false,
+    });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     Cookies.remove("token");
     router.push("/login");
-  };
+  }, [router]);
 
-  return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user: authState.user,
+      token: authState.token,
+      login,
+      logout,
+      loading: authState.loading,
+    }),
+    [authState, login, logout],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // Hook personalizado para usar el contexto más fácil
