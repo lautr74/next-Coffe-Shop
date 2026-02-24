@@ -9,6 +9,7 @@ import {
 } from "react";
 import api from "../lib/api";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface User {
   id: string;
@@ -49,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(userData);
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(userData));
+    Cookies.set("token", newToken, { expires: 7 });
     router.push("/"); // Redirigir al home tras login
   };
 
@@ -57,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    Cookies.remove("token");
     router.push("/login");
   };
 

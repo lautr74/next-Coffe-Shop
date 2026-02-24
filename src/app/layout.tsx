@@ -1,5 +1,8 @@
+import "./globals.css";
 import Navbar from "../components/Navbar";
 import { AuthProvider } from "../context/AuthContext";
+import { CartProvider } from "../context/CartContext";
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -10,8 +13,10 @@ export default function RootLayout({
     <html lang="es">
       <body className="bg-black text-white antialiased">
         <AuthProvider>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <CartProvider>
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

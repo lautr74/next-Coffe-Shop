@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { isAxiosError } from "axios";
+import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../lib/api";
 
@@ -73,6 +74,16 @@ export default function LoginPage() {
           >
             Entrar
           </button>
+
+          <p className="text-sm text-center text-zinc-400">
+            ¿No tienes cuenta?{" "}
+            <Link
+              href="/register"
+              className="text-orange-500 hover:text-orange-400 font-semibold"
+            >
+              Regístrate
+            </Link>
+          </p>
         </div>
       </form>
     </div>

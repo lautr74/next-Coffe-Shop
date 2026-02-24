@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { ShoppingBag } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { cart } = useCart();
+
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <nav className="flex items-center justify-between px-8 py-4 bg-zinc-950 border-b border-zinc-800 text-white">
@@ -19,10 +24,20 @@ export default function Navbar() {
       {/* Enlaces y Auth */}
       <div className="flex items-center gap-6">
         <Link
-          href="/productos"
+          href="/products"
           className="text-sm hover:text-orange-400 transition"
         >
           Productos
+        </Link>
+
+        <Link href="/cart" className="relative group p-2">
+          <ShoppingBag className="w-6 h-6 text-zinc-400 group-hover:text-orange-500 transition-colors" />
+
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 bg-orange-500 text-black text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-black animate-in zoom-in duration-300">
+              {totalItems}
+            </span>
+          )}
         </Link>
 
         {user ? (
