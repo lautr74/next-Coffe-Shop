@@ -11,7 +11,7 @@ import api from "../../lib/api";
 
 const registerSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 letras"),
-  email: z.email("Introduce un email válido"),
+  email: z.string().email("Introduce un email válido"),
   password: z
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")

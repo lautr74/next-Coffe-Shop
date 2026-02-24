@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useMemo,
   ReactNode,
 } from "react";
 import api from "../lib/api";
@@ -35,14 +36,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Al cargar la app, miramos si hay sesión guardada
-    const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    const loadAuth = () => {
+      const savedToken = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+      if (savedToken && savedUser) {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      }
+      setLoading(false);
+    };
+    loadAuth();
   }, []);
 
   const login = (newToken: string, userData: User) => {
@@ -63,11 +67,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push("/login");
   };
 
-  return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, token, login, logout, loading }),
+    [user, token, loading],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // Hook personalizado para usar el contexto más fácil

@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
