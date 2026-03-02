@@ -2,8 +2,10 @@
 import { useCart } from "../../context/CartContext";
 import Link from "next/link";
 import { Trash2, Plus, Minus, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
+  const router = useRouter();
   const {
     cart,
     addToCart,
@@ -37,6 +39,11 @@ export default function CartPage() {
       </div>
     );
   }
+
+  const handleGoToCheckout = () => {
+    if (cart.length === 0) return;
+    router.push("/checkout/address");
+  };
 
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-12">
@@ -119,7 +126,10 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button className="w-full bg-white text-black py-4 rounded-xl font-black hover:bg-orange-500 transition-all uppercase tracking-widest active:scale-95">
+            <button
+              onClick={handleGoToCheckout}
+              className="w-full bg-white text-black py-4 rounded-xl font-black hover:bg-orange-500 transition-all uppercase tracking-widest active:scale-95"
+            >
               Tramitar Pedido
             </button>
 

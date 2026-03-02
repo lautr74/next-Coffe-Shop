@@ -5,9 +5,11 @@ import {
   useContext,
   useEffect,
   useState,
+  useMemo,
   ReactNode,
+  useCallback,
 } from "react";
-import api from "../lib/api";
+
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -35,39 +37,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Al cargar la app, miramos si hay sesión guardada
-    const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    const loadAuth = () => {
+      const savedToken = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+      if (savedToken && savedUser) {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      }
+      setLoading(false);
+    };
+    loadAuth();
   }, []);
 
-  const login = (newToken: string, userData: User) => {
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-    Cookies.set("token", newToken, { expires: 7 });
-    router.push("/"); // Redirigir al home tras login
-  };
+  const login = useCallback(
+    (newToken: string, userData: User) => {
+      setToken(newToken);
+      setUser(userData);
+      localStorage.setItem("token", newToken);
+      localStorage.setItem("user", JSON.stringify(userData));
+      Cookies.set("token", newToken, { expires: 7 });
+      router.push("/");
+    },
+    [router],
+  ); // Solo se recrea si el router cambia (casi nunca)
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     Cookies.remove("token");
     router.push("/login");
-  };
+  }, [router]);
 
-  return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, token, login, logout, loading }),
+    [user, token, loading],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // Hook personalizado para usar el contexto más fácil

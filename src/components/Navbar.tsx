@@ -30,6 +30,13 @@ export default function Navbar() {
           Productos
         </Link>
 
+        <Link
+          href="/orders"
+          className="text-sm hover:text-orange-400 transition"
+        >
+          Pedidos
+        </Link>
+
         <Link href="/cart" className="relative group p-2">
           <ShoppingBag className="w-6 h-6 text-zinc-400 group-hover:text-orange-500 transition-colors" />
 
@@ -43,7 +50,9 @@ export default function Navbar() {
         {user ? (
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end">
-              <span className="text-xs text-zinc-400">Bienvenido,</span>
+              <span className="text-xs font-mediumtext-zinc-400">
+                Bienvenido
+              </span>
               <span className="text-sm font-medium text-orange-400">
                 {user.name}
               </span>
