@@ -1,15 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react"; // 1. Importa Suspense
 import { Elements } from "@stripe/react-stripe-js";
 import { useSearchParams } from "next/navigation";
 import { stripePromise } from "../../../lib/stripe-client";
 import { CheckoutForm } from "../../../components/CheckoutForm";
 import api from "../../../lib/api";
 
-export default function CheckoutPage() {
+// 2. Crea un componente interno para la lógica del checkout
+function CheckoutContent() {
   const [clientSecret, setClientSecret] = useState("");
   const searchParams = useSearchParams();
-  const addressId = useSearchParams().get("addressId");
+  const addressId = searchParams.get("addressId");
 
   useEffect(() => {
     const fetchPaymentIntent = async () => {
@@ -18,45 +19,16 @@ export default function CheckoutPage() {
           addressId: addressId,
         });
 
-        console.log("📦 Respuesta del servidor recibida:", response.status);
-        console.log("🔑 Datos recibidos:", response.data);
-
         if (response.data && response.data.clientSecret) {
           setClientSecret(response.data.clientSecret);
-          console.log("✅ Client Secret configurado correctamente.");
-        } else {
-          console.warn(
-            "⚠️ La respuesta no contiene un clientSecret:",
-            response.data,
-          );
         }
       } catch (err: any) {
-        // Diferenciamos si es un error de respuesta del servidor o de red
-        if (err.response) {
-          console.error("❌ Error del servidor (Backend):", {
-            status: err.response.status,
-            data: err.response.data,
-          });
-        } else if (err.request) {
-          console.error(
-            "❌ No se recibió respuesta del servidor (Network Error):",
-            err.request,
-          );
-        } else {
-          console.error("❌ Error al configurar la petición:", err.message);
-        }
+        console.error("❌ Error en el pago:", err.message);
       }
     };
 
     fetchPaymentIntent();
-  }, []);
-  const appearance = {
-    theme: "night",
-    variables: {
-      colorPrimary: "#f97316", // El naranja de tu tema
-      colorBackground: "#18181b", // zinc-900
-    },
-  };
+  }, [addressId]); // Añadimos addressId como dependencia por seguridad
 
   return (
     <div className="max-w-md mx-auto py-20 px-4">
@@ -70,5 +42,20 @@ export default function CheckoutPage() {
         <div className="text-white">Cargando pasarela de pago...</div>
       )}
     </div>
+  );
+}
+
+// 3. El export default solo envuelve al componente en Suspense
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-md mx-auto py-20 px-4 text-white">
+          Cargando configuración...
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }
