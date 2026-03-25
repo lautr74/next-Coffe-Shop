@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import api from "../../lib/api";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Package, Loader2 } from "lucide-react";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -24,112 +25,137 @@ export default function OrdersPage() {
 
   if (loading)
     return (
-      <div className="text-center py-20 text-zinc-500">
-        Cargando tu historial...
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-muted-foreground">Cargando tus pedidos...</p>
+        </div>
       </div>
     );
 
   return (
-    <main className="max-w-4xl mx-auto p-6 mt-10">
-      <h1 className="text-3xl font-bold text-white mb-8">Mis Pedidos</h1>
-
-      {orders.length === 0 ? (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10 text-center">
-          <p className="text-zinc-500">Aún no has realizado ninguna compra.</p>
+    <main className="min-h-screen bg-background py-12 px-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-2">
+            Mis Pedidos
+          </h1>
+          <p className="text-muted-foreground">
+            Historial de todas tus compras
+          </p>
         </div>
-      ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-xl"
-            >
-              {/* Cabecera de la Orden */}
-              <div className="bg-zinc-800/50 p-4 sm:p-6 flex flex-wrap justify-between items-center gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-zinc-500 font-bold">
-                    Pedido ID
-                  </p>
-                  <p className="text-white text-sm font-mono">
-                    {order.id.slice(0, 8)}...
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-zinc-500 font-bold">
-                    Fecha
-                  </p>
-                  <p className="text-white text-sm">
-                    {format(new Date(order.createdAt), "d 'de' MMMM, yyyy", {
-                      locale: es,
-                    })}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-zinc-500 font-bold">
-                    Estado
-                  </p>
-                  <span
-                    className={`text-xs font-bold px-3 py-1 rounded-full ${
-                      order.status === "PAID"
-                        ? "bg-green-500/10 text-green-500"
-                        : "bg-orange-500/10 text-orange-500"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs uppercase tracking-widest text-zinc-500 font-bold">
-                    Total
-                  </p>
-                  <p className="text-orange-500 font-bold text-lg">
-                    {order.totalAmount}€
-                  </p>
-                </div>
-              </div>
 
-              {/* Lista de Productos */}
-              <div className="p-6 space-y-4">
-                {order.items.map((item: any) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-4 border-b border-zinc-800 pb-4 last:border-0 last:pb-0"
-                  >
-                    <div className="w-16 h-16 bg-black rounded-xl flex-shrink-0 overflow-hidden border border-zinc-800">
-                      {item.product.images?.[0] && (
-                        <img
-                          src={item.product.images[0]}
-                          alt={item.product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-white font-medium">
-                        {item.product.name}
-                      </p>
-                      <p className="text-sm text-zinc-500">
-                        Cantidad: {item.quantity} • {item.price}€ / unidad
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Dirección de Envío */}
-              <div className="px-6 py-4 bg-black/30 border-t border-zinc-800">
-                <p className="text-xs text-zinc-500 uppercase font-bold mb-1">
-                  Enviado a:
-                </p>
-                <p className="text-zinc-400 text-sm">
-                  {order.address.street}, {order.address.city},{" "}
-                  {order.address.zipCode}
-                </p>
-              </div>
+        {orders.length === 0 ? (
+          <div className="bg-card border border-border rounded-2xl p-12 text-center">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Package className="w-8 h-8 text-muted-foreground" />
             </div>
-          ))}
-        </div>
-      )}
+            <p className="text-foreground font-serif text-xl mb-2">
+              Sin pedidos todavia
+            </p>
+            <p className="text-muted-foreground">
+              Cuando realices tu primera compra, aparecera aqui.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="bg-card border border-border rounded-2xl overflow-hidden"
+              >
+                {/* Order Header */}
+                <div className="bg-muted p-5 flex flex-wrap justify-between items-center gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      Pedido
+                    </p>
+                    <p className="text-foreground text-sm font-mono">
+                      #{order.id.slice(0, 8)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      Fecha
+                    </p>
+                    <p className="text-foreground text-sm">
+                      {format(new Date(order.createdAt), "d 'de' MMMM, yyyy", {
+                        locale: es,
+                      })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      Estado
+                    </p>
+                    <span
+                      className={`text-xs font-medium px-3 py-1 rounded-full ${
+                        order.status === "PAID"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-accent/30 text-accent-foreground"
+                      }`}
+                    >
+                      {order.status === "PAID" ? "Pagado" : order.status}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      Total
+                    </p>
+                    <p className="text-primary font-serif text-lg">
+                      {order.totalAmount}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Order Items */}
+                <div className="p-5 space-y-4">
+                  {order.items.map((item: any) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 border-b border-border pb-4 last:border-0 last:pb-0"
+                    >
+                      <div className="w-14 h-14 bg-muted rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        {item.product.images?.[0] ? (
+                          <img
+                            src={item.product.images[0]}
+                            alt={item.product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xl font-serif text-primary/30">
+                            {item.product.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-foreground font-medium">
+                          {item.product.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.quantity} x {item.price}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Shipping Address */}
+                <div className="px-5 py-4 bg-muted/50 border-t border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                    Direccion de envio
+                  </p>
+                  <p className="text-foreground text-sm">
+                    {order.address.street}, {order.address.city},{" "}
+                    {order.address.zipCode}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </main>
   );
 }

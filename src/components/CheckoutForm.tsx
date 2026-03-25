@@ -5,6 +5,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { useState } from "react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export const CheckoutForm = () => {
   const stripe = useStripe();
@@ -12,7 +13,7 @@ export const CheckoutForm = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
@@ -29,7 +30,7 @@ export const CheckoutForm = () => {
     if (error.type === "card_error" || error.type === "validation_error") {
       setMessage(error.message ?? "Error inesperado");
     } else {
-      setMessage("Ocurrió un error inesperado.");
+      setMessage("Ocurrio un error inesperado.");
     }
 
     setIsLoading(false);
@@ -37,16 +38,32 @@ export const CheckoutForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement options={{ layout: "tabs" }} />
+      <PaymentElement
+        options={{
+          layout: "tabs",
+        }}
+      />
 
       <button
         disabled={isLoading || !stripe || !elements}
-        className="w-full bg-orange-500 text-black py-3 rounded-xl font-bold hover:bg-orange-600 transition-all disabled:opacity-50"
+        className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
       >
-        {isLoading ? "Procesando..." : "Pagar ahora"}
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Procesando pago...
+          </>
+        ) : (
+          "Completar Compra"
+        )}
       </button>
 
-      {message && <div className="text-red-500 text-sm mt-2">{message}</div>}
+      {message && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          {message}
+        </div>
+      )}
     </form>
   );
 };

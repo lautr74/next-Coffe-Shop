@@ -1,32 +1,36 @@
-// src/app/orders/success/page.tsx
 "use client";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "../../context/CartContext";
+import { CheckCircle, ArrowRight } from "lucide-react";
 
 export default function SuccessPage() {
   const { clearLocalCart, cart, loading } = useCart();
 
   useEffect(() => {
     if (loading || cart.length === 0) return;
-
     clearLocalCart();
   }, [cart.length, clearLocalCart, loading]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
-      <div className="bg-zinc-900 p-10 rounded-3xl border border-zinc-800 text-center max-w-md">
-        <div className="text-6xl mb-4">✅</div>
-        <h1 className="text-3xl font-bold mb-2">¡Pago Realizado!</h1>
-        <p className="text-zinc-400 mb-8">
-          Tu pedido ha sido procesado correctamente. En breve recibirás un email
-          de confirmación.
+    <div className="min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="bg-card border border-border p-10 rounded-2xl text-center max-w-md w-full">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle className="w-10 h-10 text-green-600" />
+        </div>
+        <h1 className="text-3xl font-serif text-foreground mb-3">
+          Pedido Confirmado
+        </h1>
+        <p className="text-muted-foreground mb-8 leading-relaxed">
+          Tu pedido ha sido procesado correctamente. En breve recibiras un email
+          con los detalles de tu compra.
         </p>
         <Link
-          href="/dashboard" // O a tu historial de pedidos
-          className="bg-orange-500 text-black px-8 py-3 rounded-xl font-bold hover:bg-orange-600 transition-all"
+          href="/orders"
+          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium hover:bg-primary/90 transition-colors"
         >
-          Ir a mis pedidos
+          Ver mis pedidos
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     </div>
