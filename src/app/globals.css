@@ -1,2 +1,47 @@
 @import "tailwindcss";
 
+@theme inline {
+  --font-sans: 'Playfair Display', 'Georgia', serif;
+  --font-serif: 'Playfair Display', 'Georgia', serif;
+  --font-mono: 'Inter', 'system-ui', sans-serif;
+  
+  /* Coffee Shop Premium Palette */
+  --color-background: #FAF8F5;
+  --color-foreground: #3D2C24;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #3D2C24;
+  --color-primary: #7A5C42;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #E8F4F8;
+  --color-secondary-foreground: #3D2C24;
+  --color-muted: #F5F0EB;
+  --color-muted-foreground: #6B5B52;
+  --color-accent: #C4A77D;
+  --color-accent-foreground: #3D2C24;
+  --color-border: #E5DDD5;
+  --color-ring: #7A5C42;
+  
+  --radius: 0.75rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-foreground);
+}

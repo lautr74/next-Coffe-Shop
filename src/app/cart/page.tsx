@@ -1,7 +1,7 @@
 "use client";
 import { useCart } from "../../context/CartContext";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ArrowLeft } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CartPage() {
@@ -17,25 +17,34 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-orange-500"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-        <h2 className="text-3xl font-black mb-4">TU CARRITO ESTÁ VACÍO</h2>
-        <p className="text-zinc-500 mb-8 text-center">
-          Parece que aún no has elegido tu café para hoy.
-        </p>
-        <Link
-          href="/products"
-          className="bg-orange-500 text-black px-8 py-3 rounded-full font-black hover:bg-orange-600 transition-all flex items-center gap-2"
-        >
-          <ArrowLeft size={20} /> VOLVER A LA TIENDA
-        </Link>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShoppingBag className="w-10 h-10 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-serif text-foreground mb-3">
+            Tu carrito esta vacio
+          </h2>
+          <p className="text-muted-foreground mb-8 max-w-sm">
+            Descubre nuestra seleccion de cafes de especialidad y encuentra tu
+            favorito.
+          </p>
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Ver productos
+          </Link>
+        </div>
       </div>
     );
   }
@@ -46,96 +55,115 @@ export default function CartPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 md:p-12">
+    <main className="min-h-screen bg-background py-12 px-6">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-black mb-10 tracking-tighter">
-          TU <span className="text-orange-500">CARRITO</span>
-        </h1>
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-2">
+            Tu Carrito
+          </h1>
+          <p className="text-muted-foreground">
+            {cart.length} {cart.length === 1 ? "producto" : "productos"} en tu
+            carrito
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* LISTA DE PRODUCTOS (COL 1 y 2) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Products List */}
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-all"
+                className="flex items-center gap-4 bg-card border border-border p-5 rounded-2xl"
               >
-                {/* Imagen del producto */}
-                <div className="w-20 h-20 bg-zinc-800 rounded-xl flex items-center justify-center text-3xl">
-                  ☕
+                {/* Product Image Placeholder */}
+                <div className="w-20 h-20 bg-muted rounded-xl flex items-center justify-center shrink-0">
+                  <span className="text-3xl font-serif text-primary/30">
+                    {item.product.name.charAt(0)}
+                  </span>
                 </div>
 
-                {/* Info del producto */}
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg">{item.product.name}</h3>
-                  <p className="text-zinc-500 text-sm mb-2">
-                    {item.variant?.weight ?? "-"}
+                {/* Product Info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-serif text-foreground text-lg truncate">
+                    {item.product.name}
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    {item.variant?.weight ?? "-"}g
                   </p>
-                  <p className="text-orange-500 font-bold">
-                    {item.variant?.price ?? 0}€ / ud
+                  <p className="text-primary font-medium mt-1">
+                    {item.variant?.price ?? 0}
                   </p>
                 </div>
 
-                {/* Controles de cantidad */}
-                <div className="flex items-center gap-3 bg-black rounded-lg p-1 border border-zinc-800">
+                {/* Quantity Controls */}
+                <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
                   <button
                     onClick={() => decreaseQuantity(item.variantId)}
-                    className="p-1 hover:text-orange-500 transition-colors"
+                    className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-card rounded-lg transition-colors"
+                    aria-label="Disminuir cantidad"
                   >
-                    <Minus size={18} />
+                    <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-8 text-center font-bold">
+                  <span className="w-8 text-center font-medium text-foreground">
                     {item.quantity}
                   </span>
                   <button
                     onClick={() => addToCart(item.productId, item.variantId)}
-                    className="p-1 hover:text-orange-500 transition-colors"
+                    className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-card rounded-lg transition-colors"
+                    aria-label="Aumentar cantidad"
                   >
-                    <Plus size={18} />
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* Botón borrar */}
+                {/* Remove Button */}
                 <button
                   onClick={() => removeFromCart(item.variantId)}
-                  className="p-2 text-zinc-600 hover:text-red-500 transition-colors"
+                  className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
+                  aria-label="Eliminar producto"
                 >
-                  <Trash2 size={20} />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             ))}
           </div>
 
-          {/* RESUMEN DE COMPRA (COL 3) */}
-          <div className="bg-zinc-900 p-8 rounded-3xl border border-zinc-800 h-fit sticky top-24">
-            <h2 className="text-xl font-bold mb-6">RESUMEN</h2>
-            <div className="space-y-4 mb-8">
-              <div className="flex justify-between text-zinc-400">
-                <span>Subtotal</span>
-                <span>{totalPrice.toFixed(2)}€</span>
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-card border border-border p-6 rounded-2xl sticky top-28">
+              <h2 className="font-serif text-xl text-foreground mb-6">
+                Resumen del Pedido
+              </h2>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>{totalPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Envio</span>
+                  <span className="text-green-600 font-medium">Gratis</span>
+                </div>
+                <div className="border-t border-border pt-4 flex justify-between text-foreground">
+                  <span className="font-serif text-lg">Total</span>
+                  <span className="font-serif text-xl text-primary">
+                    {totalPrice.toFixed(2)}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between text-zinc-400">
-                <span>Envío</span>
-                <span className="text-green-500 font-medium">Gratis</span>
-              </div>
-              <div className="border-t border-zinc-800 pt-4 flex justify-between text-2xl font-black">
-                <span>TOTAL</span>
-                <span className="text-orange-500">
-                  {totalPrice.toFixed(2)}€
-                </span>
-              </div>
+
+              <button
+                onClick={handleGoToCheckout}
+                className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-medium hover:bg-primary/90 transition-colors"
+              >
+                Continuar con el Pedido
+              </button>
+
+              <p className="text-center text-muted-foreground text-xs mt-4">
+                Impuestos incluidos. Pago seguro.
+              </p>
             </div>
-
-            <button
-              onClick={handleGoToCheckout}
-              className="w-full bg-white text-black py-4 rounded-xl font-black hover:bg-orange-500 transition-all uppercase tracking-widest active:scale-95"
-            >
-              Tramitar Pedido
-            </button>
-
-            <p className="text-center text-zinc-600 text-xs mt-4">
-              Impuestos incluidos. Pago seguro mediante SSL.
-            </p>
           </div>
         </div>
       </div>

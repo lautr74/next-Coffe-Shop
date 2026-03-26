@@ -5,87 +5,116 @@ import { isAxiosError } from "axios";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../lib/api";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
-      // 1. Petición al backend de Express
       const res = await api.post("/auth/login", { email, password });
       login(res.data.token, res.data.user);
-      console.log("Login exitoso:", res.data);
     } catch (err: unknown) {
       if (isAxiosError<{ error?: string }>(err)) {
-        setError(err.response?.data?.error || "Error al iniciar sesión");
+        setError(err.response?.data?.error || "Error al iniciar sesion");
       } else {
-        setError("Error al iniciar sesión");
+        setError("Error al iniciar sesion");
       }
       console.error("Error en login:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white p-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-zinc-900 p-8 rounded-xl shadow-lg border border-zinc-800"
-      >
-        <h1 className="text-2xl font-bold mb-6 text-center text-orange-500">
-          Bienvenido de nuevo
-        </h1>
-
-        {error && (
-          <p className="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded mb-4 text-sm">
-            {error}
-          </p>
-        )}
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 focus:border-orange-500 outline-none transition"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 rounded bg-zinc-800 border border-zinc-700 focus:border-orange-500 outline-none transition"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold py-2 rounded transition"
-          >
-            Entrar
-          </button>
-
-          <p className="text-sm text-center text-zinc-400">
-            ¿No tienes cuenta?{" "}
-            <Link
-              href="/register"
-              className="text-orange-500 hover:text-orange-400 font-semibold"
-            >
-              Regístrate
-            </Link>
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif text-foreground mb-2">
+            Bienvenido
+          </h1>
+          <p className="text-muted-foreground">
+            Inicia sesion para continuar con tu pedido
           </p>
         </div>
-      </form>
+
+        {/* Form Card */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-card border border-border rounded-2xl p-8 shadow-sm"
+        >
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-5">
+            <div>
+              <label className="block text-sm text-foreground mb-2 font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                placeholder="tu@email.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-foreground mb-2 font-medium">
+                Contrasena
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                placeholder="Tu contrasena"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                "Iniciar Sesion"
+              )}
+            </button>
+          </div>
+        </form>
+
+        {/* Footer */}
+        <p className="text-center text-muted-foreground text-sm mt-6">
+          No tienes cuenta?{" "}
+          <Link
+            href="/register"
+            className="text-primary hover:underline font-medium"
+          >
+            Crear cuenta
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

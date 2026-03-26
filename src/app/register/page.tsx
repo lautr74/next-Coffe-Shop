@@ -8,16 +8,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../lib/api";
+import { Loader2 } from "lucide-react";
 
 const registerSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 letras"),
-  email: z.email("Introduce un email válido"),
+  email: z.string().email("Introduce un email valido"),
   password: z
     .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .regex(/[A-Z]/, "Debe tener al menos una mayúscula")
-    .regex(/[a-z]/, "Debe tener al menos una minúscula")
-    .regex(/[0-9]/, "Debe tener al menos un número"),
+    .min(8, "La contrasena debe tener al menos 8 caracteres")
+    .regex(/[A-Z]/, "Debe tener al menos una mayuscula")
+    .regex(/[a-z]/, "Debe tener al menos una minuscula")
+    .regex(/[0-9]/, "Debe tener al menos un numero"),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -55,87 +56,106 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white p-4">
-      <div className="w-full max-w-md bg-zinc-900 p-8 rounded-xl border border-zinc-800 shadow-2xl">
-        <h1 className="text-2xl font-bold mb-2 text-center text-orange-500">
-          Crea tu cuenta
-        </h1>
-        <p className="text-zinc-400 text-sm text-center mb-6">
-          Únete a la mejor experiencia de café
-        </p>
-
-        {error && (
-          <p className="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded mb-4 text-xs">
-            {error}
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif text-foreground mb-2">
+            Crear Cuenta
+          </h1>
+          <p className="text-muted-foreground">
+            Unete y descubre el mejor cafe de especialidad
           </p>
-        )}
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-1 font-bold">
-              Nombre
-            </label>
-            <input
-              type="text"
-              placeholder="Tu nombre"
-              className="w-full p-2.5 rounded bg-zinc-800 border border-zinc-700 focus:border-orange-500 outline-none transition text-sm"
-              {...register("name")}
-              aria-invalid={Boolean(errors.name)}
-            />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>
-            )}
-          </div>
+        {/* Form Card */}
+        <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm">
+              {error}
+            </div>
+          )}
 
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-1 font-bold">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="correo@ejemplo.com"
-              className="w-full p-2.5 rounded bg-zinc-800 border border-zinc-700 focus:border-orange-500 outline-none transition text-sm"
-              {...register("email")}
-              aria-invalid={Boolean(errors.email)}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-400">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
+              <label className="block text-sm text-foreground mb-2 font-medium">
+                Nombre
+              </label>
+              <input
+                type="text"
+                placeholder="Tu nombre"
+                className="w-full px-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                {...register("name")}
+                aria-invalid={Boolean(errors.name)}
+              />
+              {errors.name && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
 
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-1 font-bold">
-              Contraseña
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full p-2.5 rounded bg-zinc-800 border border-zinc-700 focus:border-orange-500 outline-none transition text-sm"
-              {...register("password")}
-              aria-invalid={Boolean(errors.password)}
-            />
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-400">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+            <div>
+              <label className="block text-sm text-foreground mb-2 font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="tu@email.com"
+                className="w-full px-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                {...register("email")}
+                aria-invalid={Boolean(errors.email)}
+              />
+              {errors.email && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-black font-black py-3 rounded uppercase tracking-widest text-xs transition-transform active:scale-95 disabled:opacity-70"
+            <div>
+              <label className="block text-sm text-foreground mb-2 font-medium">
+                Contrasena
+              </label>
+              <input
+                type="password"
+                placeholder="Min. 8 caracteres"
+                className="w-full px-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                {...register("password")}
+                aria-invalid={Boolean(errors.password)}
+              />
+              {errors.password && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Creando cuenta...
+                </>
+              ) : (
+                "Crear Cuenta"
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-muted-foreground text-sm mt-6">
+          Ya tienes cuenta?{" "}
+          <Link
+            href="/login"
+            className="text-primary hover:underline font-medium"
           >
-            {isSubmitting ? "Creando cuenta..." : "Registrarse"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-zinc-500">
-          ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="text-orange-500 hover:underline">
-            Inicia sesión
+            Iniciar sesion
           </Link>
         </p>
       </div>
